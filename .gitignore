@@ -1,2 +1,3 @@
 video-serializer
 *.o
+asset/frame*.png
