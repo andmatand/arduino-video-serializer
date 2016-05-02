@@ -10,7 +10,7 @@
 #define A   A0
 #define B   A1
 #define C   A2
-RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
+RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, true);
 
 void setup() {
   //Serial.begin(9600);
@@ -19,6 +19,7 @@ void setup() {
 
   // clear screen with red
   matrix.fillScreen(matrix.Color333(1, 0, 0));
+  matrix.swapBuffers(false);
 }
 
 uint16_t read_color() {
@@ -39,7 +40,6 @@ uint16_t read_color() {
   }
 }
 
-
 void loop() {
   int i = 0;
   uint16_t color;
@@ -48,4 +48,7 @@ void loop() {
       matrix.drawPixel(x, y, read_color());
     }
   }
+
+  // Update display
+  matrix.swapBuffers(false);
 }
