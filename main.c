@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include "lib/arduino_serial.h"
 #include "lib/png_reader.h"
@@ -6,8 +7,6 @@
 #define DEVICE_NAME "/dev/ttyACM0"
 #define BAUD_RATE 115200
 
-
-const int NUM_FRAMES = 19;
 
 int port;
 
@@ -54,8 +53,22 @@ void send_image(coolpng png) {
     }
 }
 
-void send_images() {
-    for (int i = 0; i < NUM_FRAMES; i++) {
+// Detect how many frames there are by checking for the existence of
+// asset/frame*.png
+int count_frames() {
+    bool fileExists = true;
+    char filename[255];
+    int i = 0;
+    while (fileExists) {
+        sprintf(filename, "asset/frame%03d.png", i++);
+        fileExists = (access(filename, F_OK) != -1);
+    }
+
+    return i - 1;
+}
+
+void send_images(int numFrames) {
+    for (int i = 0; i < numFrames; i++) {
         char filename[255];
         sprintf(filename, "asset/frame%03d.png", i);
 
@@ -64,8 +77,8 @@ void send_images() {
 
         send_image(png);
 
-        // delay
-        usleep(50000);
+        // delay to make framerate look correct
+        usleep(50 * 1000);
     }
 }
 
@@ -88,9 +101,13 @@ int main(int argc, char* argv[]) {
     //printf("Sending image...");
     //do_stuff_with_png();
     //printf("Done\n");
+    //
+
+    int numFrames = count_frames();
+    printf("Detected %d frames\n", numFrames);
 
     while (1) {
-        send_images();
+        send_images(numFrames);
     }
 
     serialport_close(port);
