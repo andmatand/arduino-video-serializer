@@ -6,6 +6,7 @@
 
 #define DEVICE_NAME "/dev/ttyACM0"
 #define BAUD_RATE 115200
+#define FRAME_FORMAT "asset/frame/%03d.png"
 
 
 int port;
@@ -60,7 +61,7 @@ int count_frames() {
     char filename[255];
     int i = 0;
     while (fileExists) {
-        sprintf(filename, "asset/frame%03d.png", i++);
+        sprintf(filename, FRAME_FORMAT, i++);
         fileExists = (access(filename, F_OK) != -1);
     }
 
@@ -70,7 +71,7 @@ int count_frames() {
 void send_images(int numFrames) {
     for (int i = 0; i < numFrames; i++) {
         char filename[255];
-        sprintf(filename, "asset/frame%03d.png", i);
+        sprintf(filename, FRAME_FORMAT, i);
 
         //coolpng png = read_png_file("asset/test.png");
         coolpng png = read_png_file(filename);
@@ -78,7 +79,7 @@ void send_images(int numFrames) {
         send_image(png);
 
         // delay to make framerate look correct
-        usleep(50 * 1000);
+        //usleep(50 * 1000);
     }
 }
 
